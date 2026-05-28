@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proteção de Matas e Rios</title>
+
+  <!-- Google Fonts: Playfair Display + Lato -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       VARIÁVEIS & RESET
+    ============================================= */
+    :root {
+      --verde-escuro:   #1a3a2a;
+      --verde-medio:    #2d6a4f;
+      --verde-claro:    #52b788;
+      --verde-menta:    #95d5b2;
+      --azul-rio:       #2196a5;
+      --azul-claro:     #74c2d0;
+      --terra:          #7c5c3e;
+      --areia:          #e8d9c4;
+      --creme:          #f5f0e8;
+      --branco:         #ffffff;
+      --texto-escuro:   #1a2b1e;
+      --texto-medio:    #3d5a47;
+      --sombra-verde:   rgba(42,106,79,.18);
+      --sombra-forte:   rgba(26,58,42,.35);
+      --radius:         14px;
+      --radius-lg:      24px;
+      --transition:     .35s cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--creme);
+      color: var(--texto-escuro);
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       UTILITÁRIOS
+    ============================================= */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =============================================
+       HEADER / NAV
+    ============================================= */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(26,58,42,.93);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--verde-claro);
+      transition: background var(--transition);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      padding: 0 32px;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--verde-menta);
+      letter-spacing: .03em;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo span { font-size: 1.6rem; }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 10px;
+    }
+
+    .nav-links a {
+      color: var(--areia);
+      text-decoration: none;
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 50px;
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-links a:hover {
+      background: var(--verde-claro);
+      color: var(--verde-escuro);
+    }
+
+    /* Hamburguer */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .hamburger span {
+      display: block;
+      width: 26px; height: 2px;
+      background: var(--verde-menta);
+      border-radius: 2px;
+      transition: transform var(--transition), opacity var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .hamburger { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 68px; left: 0; right: 0;
+        background: rgba(26,58,42,.97);
+        padding: 20px 24px 28px;
+        gap: 6px;
+        border-bottom: 2px solid var(--verde-claro);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 1rem; padding: 12px 20px; }
+    }
+
+    /* =============================================
+       HERO
+    ============================================= */
+    #inicio {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--verde-escuro);
+    }
+
+    /* Floresta SVG animada como fundo */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Gradiente de céu */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        175deg,
+        #0a2218 0%,
+        #1a3a2a 35%,
+        #2d6a4f 70%,
+        #1a5f7a 100%
+      );
+    }
+
+    /* Camada de brilho */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      top: -30%; left: 20%;
+      width: 60%; height: 60%;
+      background: radial-gradient(ellipse, rgba(82,183,136,.15) 0%, transparent 70%);
+      animation: glow-pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: .6; transform: scale(1); }
+      50%       { opacity: 1;  transform: scale(1.1); }
+    }
+
+    /* Árvores SVG decorativas */
+    .trees {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+    }
+
+    /* Rio ondulado */
+    .river-wave {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      overflow: hidden;
+    }
+    .river-wave svg { display: block; width: 200%; animation: wave-move 8s linear infinite; }
+    @keyframes wave-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* Partículas de luz */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(149,213,178,.55);
+      animation: float-particle linear infinite;
+    }
+    @keyframes float-particle {
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: .8; }
+      50%  { transform: translateY(-80px) translateX(20px) scale(1.3); opacity: .4; }
+      100% { transform: translateY(-160px) translateX(-10px) scale(.8); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 100px 24px 60px;
+      max-width: 780px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(82,183,136,.2);
+      border: 1px solid var(--verde-claro);
+      color: var(--verde-menta);
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+      animation: fade-in-down .8s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--branco);
+      margin-bottom: 20px;
+      animation: fade-in-up .9s ease .2s both;
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--verde-menta);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 300;
+      color: var(--areia);
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto 40px;
+      animation: fade-in-up 1s ease .4s both;
+    }
+
+    .btn-hero {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--verde-claro), var(--azul-rio));
+      color: var(--branco);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-decoration: none;
+      padding: 16px 44px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      animation: fade-in-up 1s ease .6s both;
+      transition: transform var(--transition), box-shadow var(--transition);
+      box-shadow: 0 8px 30px rgba(82,183,136,.4);
+    }
+    .btn-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.15);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--transition);
+    }
+    .btn-hero:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(82,183,136,.55); }
+    .btn-hero:hover::before { transform: scaleX(1); }
+
+    @keyframes fade-in-down {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,.5);
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      animation: bounce-down 2s ease infinite;
+    }
+    .scroll-hint svg { display: block; }
+    @keyframes bounce-down {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* =============================================
+       SOBRE
+    ============================================= */
+    #sobre {
+      padding: 100px 0;
+      background: var(--creme);
+    }
+
+    .section-label {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--verde-claro);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: var(--verde-escuro);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .section-desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--texto-medio);
+      max-width: 600px;
+      margin-bottom: 56px;
+    }
+
+    /* Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--branco);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px var(--sombra-verde);
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: default;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--card-accent, linear-gradient(90deg, var(--verde-claro), var(--azul-rio)));
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 48px var(--sombra-forte);
+    }
+
+    .card-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      margin-bottom: 22px;
+      background: var(--card-icon-bg, rgba(82,183,136,.12));
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--verde-escuro);
+      margin-bottom: 12px;
+    }
+
+    .card-text {
+      font-size: .97rem;
+      line-height: 1.75;
+      color: var(--texto-medio);
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 18px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 50px;
+      background: var(--card-tag-bg, rgba(82,183,136,.12));
+      color: var(--card-tag-color, var(--verde-medio));
+    }
+
+    /* Fatos rápidos */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 24px;
+      margin-top: 64px;
+      padding: 40px 36px;
+      background: var(--verde-escuro);
+      border-radius: var(--radius-lg);
+      text-align: center;
+    }
+
+    .stat-item {}
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--verde-menta);
+      display: block;
+    }
+    .stat-label {
+      font-size: .85rem;
+      color: var(--areia);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* =============================================
+       QUIZ
+    ============================================= */
+    #quiz {
+      padding: 100px 0;
+      background: linear-gradient(160deg, #0f2b1f 0%, #1a3a2a 60%, #1a4a5a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #quiz::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(82,183,136,.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(33,150,165,.08) 0%, transparent 40%);
+    }
+
+    #quiz .section-title { color: var(--verde-menta); }
+    #quiz .section-label { color: var(--azul-claro); }
+    #quiz .section-desc  { color: var(--areia); }
+
+    .quiz-box {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(82,183,136,.25);
+      border-radius: var(--radius-lg);
+      padding: 44px 44px 40px;
+      position: relative;
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 600px) { .quiz-box { padding: 28px 20px; } }
+
+    /* Barra de progresso */
+    .quiz-progress-bar {
+      height: 6px;
+      background: rgba(255,255,255,.1);
+      border-radius: 50px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--verde-claro), var(--azul-rio));
+      border-radius: 50px;
+      transition: width .5s ease;
+    }
+
+    .quiz-counter {
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--verde-menta);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .quiz-question {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+      font-weight: 700;
+      color: var(--branco);
+      line-height: 1.45;
+      margin-bottom: 28px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-option {
+      background: rgba(255,255,255,.07);
+      border: 1.5px solid rgba(82,183,136,.25);
+      border-radius: var(--radius);
+      padding: 15px 22px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--areia);
+      text-align: left;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-option:hover:not(:disabled) {
+      background: rgba(82,183,136,.18);
+      border-color: var(--verde-claro);
+      color: var(--branco);
+      transform: translateX(6px);
+    }
+    .quiz-option.correct {
+      background: rgba(82,183,136,.25);
+      border-color: var(--verde-claro);
+      color: #c8f7de;
+    }
+    .quiz-option.correct::after {
+      content: '✓';
+      position: absolute;
+      right: 20px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: var(--verde-menta);
+    }
+    .quiz-option.wrong {
+      background: rgba(200,60,60,.2);
+      border-color: #e07070;
+      color: #f5c0c0;
+    }
+    .quiz-option.wrong::after {
+      content: '✗';
+      position: absolute;
+      right: 20px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: #f08080;
+    }
+    .quiz-option:disabled { cursor: not-allowed; }
+
+    .quiz-feedback {
+      margin-top: 18px;
+      padding: 13px 20px;
+      border-radius: var(--radius);
+      font-size: .95rem;
+      font-weight: 700;
+      display: none;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.acerto {
+      background: rgba(82,183,136,.2);
+      border: 1px solid var(--verde-claro);
+      color: var(--verde-menta);
+    }
+    .quiz-feedback.erro {
+      background: rgba(200,60,60,.15);
+      border: 1px solid #e07070;
+      color: #f5c0c0;
+    }
+
+    .btn-next {
+      margin-top: 28px;
+      display: none;
+      background: linear-gradient(135deg, var(--verde-claro), var(--azul-rio));
+      color: var(--branco);
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      padding: 13px 36px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition);
+      box-shadow: 0 6px 24px rgba(82,183,136,.4);
+    }
+    .btn-next.show { display: inline-block; }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(82,183,136,.55); }
+
+    /* Resultado */
+    .quiz-result {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .quiz-result.show { display: block; }
+
+    .result-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: pop-in .5s cubic-bezier(.175,.885,.32,1.275) both;
+    }
+    @keyframes pop-in {
+      from { opacity:0; transform: scale(.4); }
+      to   { opacity:1; transform: scale(1); }
+    }
+
+    .result-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--verde-menta);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .result-label {
+      font-size: 1rem;
+      color: var(--areia);
+      margin-bottom: 20px;
+    }
+    .result-message {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--branco);
+      font-style: italic;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .btn-restart {
+      background: transparent;
+      border: 2px solid var(--verde-claro);
+      color: var(--verde-menta);
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 13px 36px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .btn-restart:hover {
+      background: var(--verde-claro);
+      color: var(--verde-escuro);
+    }
+
+    /* =============================================
+       CONTATO
+    ============================================= */
+    #contato {
+      padding: 100px 0;
+      background: var(--creme);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+    }
+    @media (max-width: 750px) {
+      .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .contact-info {}
+    .contact-info .section-desc { margin-bottom: 32px; }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--verde-medio);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: color var(--transition), gap var(--transition);
+    }
+    .contact-link:hover { color: var(--verde-claro); gap: 20px; }
+    .contact-link .icon-wrap {
+      width: 44px; height: 44px;
+      background: rgba(42,106,79,.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      transition: background var(--transition);
+    }
+    .contact-link:hover .icon-wrap { background: rgba(82,183,136,.2); }
+
+    /* Formulário */
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+
+    .form-group label {
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--verde-medio);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      background: var(--branco);
+      border: 1.5px solid rgba(42,106,79,.2);
+      border-radius: var(--radius);
+      padding: 13px 18px;
+      font-family: 'Lato', sans-serif;
+      font-size: 1rem;
+      color: var(--texto-escuro);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--verde-claro);
+      box-shadow: 0 0 0 4px rgba(82,183,136,.15);
+    }
+
+    .btn-submit {
+      align-self: flex-start;
+      background: var(--verde-escuro);
+      color: var(--verde-menta);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 14px 40px;
+      border: 2px solid var(--verde-claro);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+    .btn-submit:hover {
+      background: var(--verde-claro);
+      color: var(--verde-escuro);
+      transform: translateY(-2px);
+    }
+
+    .form-success {
+      display: none;
+      background: rgba(82,183,136,.15);
+      border: 1px solid var(--verde-claro);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      color: var(--verde-medio);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+    .form-success.show { display: block; }
+
+    /* =============================================
+       RODAPÉ
+    ============================================= */
+    footer {
+      background: var(--verde-escuro);
+      color: rgba(255,255,255,.6);
+      padding: 60px 0 32px;
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      margin-bottom: 28px;
+    }
+    @media (max-width: 700px) {
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    .footer-brand .nav-logo { font-size: 1.5rem; margin-bottom: 14px; display: inline-flex; }
+    .footer-brand p { font-size: .9rem; line-height: 1.7; max-width: 300px; }
+
+    .footer-col h4 {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--verde-menta);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,.55);
+      text-decoration: none;
+      font-size: .9rem;
+      transition: color var(--transition);
+    }
+    .footer-col ul li a:hover { color: var(--verde-menta); }
+
+    .social-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .social-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .social-btn:hover {
+      background: var(--verde-claro);
+      border-color: var(--verde-claro);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      font-size: .82rem;
+      color: rgba(255,255,255,.3);
+    }
+    .footer-bottom strong { color: var(--verde-menta); }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--verde-escuro); }
+    ::-webkit-scrollbar-thumb { background: var(--verde-claro); border-radius: 4px; }
+  </style>
+</head>
+
+<body>
+
+  <!-- =================== HEADER =================== -->
+  <header>
+    <nav>
+      <a href="#inicio" class="nav-logo">
+        <span>🌿</span> Proteção de Matas e Rios
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#inicio" onclick="closeMenu()">Início</a></li>
+        <li><a href="#sobre" onclick="closeMenu()">Sobre</a></li>
+        <li><a href="#quiz" onclick="closeMenu()">Quiz</a></li>
+        <li><a href="#contato" onclick="closeMenu()">Contato</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- =================== HERO =================== -->
+  <section id="inicio">
+    <div class="hero-bg">
+      <!-- Árvores SVG -->
+      <svg class="trees" viewBox="0 0 1440 360" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- Árvores distantes (mais claras) -->
+        <ellipse cx="60"  cy="300" rx="50"  ry="80"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="140" cy="290" rx="45"  ry="75"  fill="#1e4430" opacity=".7"/>
+        <ellipse cx="210" cy="310" rx="55"  ry="85"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="290" cy="295" rx="40"  ry="70"  fill="#213d2e" opacity=".7"/>
+        <ellipse cx="380" cy="305" rx="60"  ry="90"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="480" cy="290" rx="45"  ry="75"  fill="#1e4430" opacity=".7"/>
+        <ellipse cx="560" cy="300" rx="55"  ry="88"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="660" cy="310" rx="50"  ry="82"  fill="#213d2e" opacity=".7"/>
+        <ellipse cx="760" cy="295" rx="45"  ry="75"  fill="#1e4430" opacity=".7"/>
+        <ellipse cx="860" cy="305" rx="58"  ry="88"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="960" cy="290" rx="48"  ry="78"  fill="#213d2e" opacity=".7"/>
+        <ellipse cx="1060" cy="310" rx="55" ry="85"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="1160" cy="295" rx="42" ry="72"  fill="#1e4430" opacity=".7"/>
+        <ellipse cx="1260" cy="305" rx="58" ry="90"  fill="#1a3a2a" opacity=".7"/>
+        <ellipse cx="1360" cy="290" rx="50" ry="80"  fill="#213d2e" opacity=".7"/>
+        <ellipse cx="1440" cy="300" rx="55" ry="85"  fill="#1a3a2a" opacity=".7"/>
+
+        <!-- Árvores frontais (mais escuras / maiores) -->
+        <ellipse cx="0"   cy="340" rx="65"  ry="110" fill="#0f2218"/>
+        <ellipse cx="100" cy="330" rx="70"  ry="120" fill="#122219"/>
+        <ellipse cx="220" cy="345" rx="60"  ry="105" fill="#0f2218"/>
+        <ellipse cx="330" cy="335" rx="75"  ry="125" fill="#122219"/>
+        <ellipse cx="450" cy="345" rx="65"  ry="112" fill="#0f2218"/>
+        <ellipse cx="570" cy="330" rx="70"  ry="118" fill="#122219"/>
+        <ellipse cx="700" cy="345" rx="68"  ry="120" fill="#0f2218"/>
+        <ellipse cx="830" cy="335" rx="72"  ry="124" fill="#122219"/>
+        <ellipse cx="960" cy="345" rx="65"  ry="112" fill="#0f2218"/>
+        <ellipse cx="1080" cy="330" rx="70" ry="118" fill="#122219"/>
+        <ellipse cx="1200" cy="345" rx="68" ry="120" fill="#0f2218"/>
+        <ellipse cx="1340" cy="335" rx="72" ry="124" fill="#122219"/>
+        <ellipse cx="1440" cy="345" rx="65" ry="112" fill="#0f2218"/>
+
+        <!-- Chão -->
+        <rect x="0" y="335" width="1440" height="30" fill="#0a1a10"/>
+      </svg>
+
+      <!-- Rio -->
+      <div class="river-wave">
+        <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1440,80 1440,60 L1440,120 L0,120 Z" fill="#1a3a52" opacity=".7"/>
+          <path d="M0,75 C180,35 360,115 540,75 C720,35 900,115 1080,75 C1260,35 1440,95 1440,75 L1440,120 L0,120 Z" fill="#1e4d6e" opacity=".5"/>
+          <!-- espelho do segundo lado para loop -->
+          <path d="M1440,60 C1620,20 1800,100 1980,60 C2160,20 2340,100 2520,60 C2700,20 2880,80 2880,60 L2880,120 L1440,120 Z" fill="#1a3a52" opacity=".7"/>
+          <path d="M1440,75 C1620,35 1800,115 1980,75 C2160,35 2340,115 2520,75 C2700,35 2880,95 2880,75 L2880,120 L1440,120 Z" fill="#1e4d6e" opacity=".5"/>
+        </svg>
+      </div>
+
+      <!-- Partículas geradas via JS -->
+      <div id="particles"></div>
+    </div>
+
+    <div class="hero-content">
+      <span class="hero-badge">🌱 Conscientização Ambiental</span>
+      <h1 class="hero-title">
+        Proteger nossas <em>Matas</em><br/>e <em>Rios</em> é proteger a vida
+      </h1>
+      <p class="hero-subtitle">
+        Cada árvore em pé e cada rio limpo representa um futuro possível. Conheça os desafios da preservação ambiental e faça parte dessa mudança.
+      </p>
+      <a href="#sobre" class="btn-hero">🌿 Saiba Mais</a>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Role</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- =================== SOBRE =================== -->
+  <section id="sobre">
+    <div class="container">
+      <div class="fade-up">
+        <p class="section-label">Por que preservar?</p>
+        <h2 class="section-title">Nossas florestas e rios<br/>estão em risco</h2>
+        <p class="section-desc">
+          O Brasil abriga a maior floresta tropical do mundo e uma das redes hidrográficas mais ricas do planeta. Proteger esses ecossistemas é garantir água, clima estável e biodiversidade para as próximas gerações.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+        <!-- Card 1 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#52b788,#2d6a4f); --card-icon-bg: rgba(82,183,136,.12);">
+          <div class="card-icon">🌳</div>
+          <h3 class="card-title">Importância das Florestas</h3>
+          <p class="card-text">
+            As florestas regulam o clima, produzem oxigênio, retêm carbono e sustentam mais de 80% da biodiversidade terrestre. São o pulmão do planeta — e cada árvore derrubada custa caro ao equilíbrio global.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(82,183,136,.12); --card-tag-color: #2d6a4f;">Flora & Clima</span>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#2196a5,#74c2d0); --card-icon-bg: rgba(33,150,165,.1);">
+          <div class="card-icon">💧</div>
+          <h3 class="card-title">Preservação dos Rios</h3>
+          <p class="card-text">
+            Rios limpos abastecem cidades, irrigam lavouras e sustentam a pesca artesanal. A vegetação ripária — a mata ciliar — protege as margens contra erosão e filtra sedimentos e poluentes antes que cheguem à água.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(33,150,165,.1); --card-tag-color: #2196a5;">Água & Vida</span>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#c4772b,#e8a96e); --card-icon-bg: rgba(196,119,43,.1);">
+          <div class="card-icon">🔥</div>
+          <h3 class="card-title">Impactos do Desmatamento</h3>
+          <p class="card-text">
+            O desmatamento libera bilhões de toneladas de CO₂, acelera mudanças climáticas, destrói habitats e provoca secas e enchentes. O Brasil perdeu mais de 13% de sua cobertura vegetal original nas últimas décadas.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(196,119,43,.1); --card-tag-color: #c4772b;">Urgente</span>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#52b788,#74c2d0); --card-icon-bg: rgba(116,194,208,.1);">
+          <div class="card-icon">🐟</div>
+          <h3 class="card-title">Poluição dos Rios</h3>
+          <p class="card-text">
+            Agrotóxicos, esgoto e lixo destroem ecossistemas aquáticos. Espécies endêmicas de peixes e anfíbios são extintas silenciosamente. Mais de 60% dos rios brasileiros apresentam algum grau de contaminação.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(116,194,208,.1); --card-tag-color: #2196a5;">Biodiversidade</span>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#2d6a4f,#52b788); --card-icon-bg: rgba(42,106,79,.12);">
+          <div class="card-icon">🌱</div>
+          <h3 class="card-title">Reflorestamento</h3>
+          <p class="card-text">
+            Recuperar áreas degradadas é possível e urgente. Projetos de reflorestamento com espécies nativas restauram serviços ecossistêmicos, combatem a erosão e criam corredores ecológicos vitais para a fauna.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(82,183,136,.12); --card-tag-color: #2d6a4f;">Solução</span>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="card fade-up" style="--card-accent: linear-gradient(90deg,#74c2d0,#2196a5); --card-icon-bg: rgba(33,150,165,.1);">
+          <div class="card-icon">🤝</div>
+          <h3 class="card-title">O que Você Pode Fazer</h3>
+          <p class="card-text">
+            Reduzir o consumo de carne, evitar produtos com desmatamento embutido, apoiar ONGs ambientais, cobrar políticas públicas e plantar árvores são ações concretas ao alcance de todos — e fazem diferença real.
+          </p>
+          <span class="card-tag" style="--card-tag-bg: rgba(33,150,165,.1); --card-tag-color: #2196a5;">Ação</span>
+        </div>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="stats-row fade-up">
+        <div class="stat-item">
+          <span class="stat-num">60%</span>
+          <span class="stat-label">da Amazônia está no Brasil</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">12k km²</span>
+          <span class="stat-label">desmatados por ano (média)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">200 mil</span>
+          <span class="stat-label">espécies na Floresta Amazônica</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">12%</span>
+          <span class="stat-label">da água doce do planeta está aqui</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== QUIZ =================== -->
+  <section id="quiz">
+    <div class="container">
+      <div class="fade-up">
+        <p class="section-label">Teste seus conhecimentos</p>
+        <h2 class="section-title">Quiz Ambiental</h2>
+        <p class="section-desc">
+          Quanto você sabe sobre florestas, rios e preservação? Responda às perguntas abaixo e descubra!
+        </p>
+      </div>
+
+      <div class="quiz-box fade-up">
+        <!-- Progresso -->
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Pergunta -->
+        <div id="quizArea">
+          <p class="quiz-counter" id="quizCounter">Pergunta 1 de 7</p>
+          <p class="quiz-question" id="quizQuestion"></p>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+          <button class="btn-next" id="btnNext" onclick="nextQuestion()">Próxima →</button>
+        </div>
+
+        <!-- Resultado -->
+        <div class="quiz-result" id="quizResult">
+          <div class="result-emoji" id="resultEmoji"></div>
+          <div class="result-score" id="resultScore"></div>
+          <div class="result-label" id="resultLabel"></div>
+          <p class="result-message" id="resultMessage"></p>
+          <button class="btn-restart" onclick="restartQuiz()">🔄 Recomeçar Quiz</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== CONTATO =================== -->
+  <section id="contato">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info fade-up">
+          <p class="section-label">Fale Conosco</p>
+          <h2 class="section-title">Junte-se à causa</h2>
+          <p class="section-desc">
+            Tem dúvidas, sugestões ou quer colaborar com a preservação ambiental? Entre em contato. Juntos somos mais fortes.
+          </p>
+          <div class="contact-links">
+            <a href="#" class="contact-link">
+              <span class="icon-wrap">📧</span>
+              contato@matasrios.org.br
+            </a>
+            <a href="#" class="contact-link">
+              <span class="icon-wrap">📍</span>
+              Brasil — todos os biomas
+            </a>
+            <a href="#" class="contact-link">
+              <span class="icon-wrap">📞</span>
+              (00) 9 0000-0000
+            </a>
+          </div>
+        </div>
+
+        <div class="fade-up">
+          <form class="contact-form" id="contactForm" onsubmit="submitForm(event)">
+            <div class="form-group">
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" placeholder="Seu nome completo" required />
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" placeholder="seu@email.com" required />
+            </div>
+            <div class="form-group">
+              <label for="msg">Mensagem</label>
+              <textarea id="msg" rows="5" placeholder="Escreva sua mensagem..." required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Enviar Mensagem 🌿</button>
+            <div class="form-success" id="formSuccess">
+              ✅ Mensagem enviada! Obrigado pelo seu contato e pelo comprometimento com a natureza.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== RODAPÉ =================== -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="#inicio" class="nav-logo"><span>🌿</span> Proteção de Matas e Rios</a>
+          <p>Cada gota de água e cada folha verde fazem parte de um sistema vivo e frágil. A preservação começa com a consciência e se concretiza na ação coletiva.</p>
+          <br/>
+          <div class="social-row">
+            <a href="#" class="social-btn" title="Instagram">📸</a>
+            <a href="#" class="social-btn" title="Facebook">👥</a>
+            <a href="#" class="social-btn" title="YouTube">▶️</a>
+            <a href="#" class="social-btn" title="Twitter/X">🐦</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="#inicio">Início</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#quiz">Quiz Ambiental</a></li>
+            <li><a href="#contato">Contato</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Links Úteis</h4>
+          <ul>
+            <li><a href="#">IBAMA</a></li>
+            <li><a href="#">WWF Brasil</a></li>
+            <li><a href="#">SOS Mata Atlântica</a></li>
+            <li><a href="#">IMAZON</a></li>
+            <li><a href="#">ANA — Águas do Brasil</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 <strong>Proteção de Matas e Rios</strong>. Projeto educativo sem fins lucrativos. Feito com 💚 pelo planeta.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =================== JAVASCRIPT =================== -->
+  <script>
+    /* ---- PARTÍCULAS NO HERO ---- */
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 6 + 3;
+        p.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${Math.random()*100}%;
+          bottom:${Math.random()*40}%;
+          animation-duration:${Math.random()*8+6}s;
+          animation-delay:${Math.random()*8}s;
+          opacity:${Math.random()*.6+.2};
+        `;
+        container.appendChild(p);
+      }
+    })();
+
+    /* ---- MENU MOBILE ---- */
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+      document.getElementById('hamburger').classList.toggle('open');
+    }
+    function closeMenu() {
+      document.getElementById('navLinks').classList.remove('open');
+      document.getElementById('hamburger').classList.remove('open');
+    }
+
+    /* ---- SCROLL REVEAL ---- */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          // delay escalonado para filhos do mesmo pai
+          const siblings = Array.from(e.target.parentElement.querySelectorAll('.fade-up'));
+          const idx = siblings.indexOf(e.target);
+          e.target.style.transitionDelay = `${idx * 0.1}s`;
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    /* ---- FORMULÁRIO ---- */
+    function submitForm(e) {
+      e.preventDefault();
+      document.getElementById('formSuccess').classList.add('show');
+      e.target.reset();
+      setTimeout(() => document.getElementById('formSuccess').classList.remove('show'), 5000);
+    }
+
+    /* ---- QUIZ ---- */
+    const perguntas = [
+      {
+        q: "Qual é o maior bioma do Brasil em extensão territorial?",
+        ops: ["Cerrado", "Pantanal", "Amazônia", "Caatinga"],
+        r: 2,
+        exp: "A Amazônia ocupa cerca de 49% do território brasileiro, sendo o maior bioma nacional e a maior floresta tropical do mundo."
+      },
+      {
+        q: "O que é 'mata ciliar' ou 'vegetação ripária'?",
+        ops: [
+          "Floresta de alta altitude",
+          "Vegetação que cresce às margens dos rios e lagos",
+          "Tipo de alga aquática",
+          "Reflorestamento urbano"
+        ],
+        r: 1,
+        exp: "A mata ciliar é a vegetação que protege as margens de rios e lagos, reduzindo erosão, filtrando poluentes e mantendo a temperatura da água."
+      },
+      {
+        q: "Qual gás é principalmente absorvido pelas florestas para combater as mudanças climáticas?",
+        ops: ["Oxigênio (O₂)", "Nitrogênio (N₂)", "Dióxido de Carbono (CO₂)", "Metano (CH₄)"],
+        r: 2,
+        exp: "As florestas atuam como sumidouros de carbono, absorvendo CO₂ da atmosfera por meio da fotossíntese e armazenando carbono em sua biomassa."
+      },
+      {
+        q: "Qual a principal causa do desmatamento na Amazônia brasileira?",
+        ops: [
+          "Expansão urbana desordenada",
+          "Agropecuária e exploração madeireira",
+          "Construção de hidrelétricas",
+          "Incêndios naturais"
+        ],
+        r: 1,
+        exp: "A expansão da agropecuária — pecuária extensiva e plantio de soja — responde pela grande maioria do desmatamento amazônico, segundo o INPE."
+      },
+      {
+        q: "Quantos % da água doce superficial do planeta estão no Brasil?",
+        ops: ["Cerca de 3%", "Cerca de 6%", "Cerca de 12%", "Cerca de 20%"],
+        r: 2,
+        exp: "O Brasil detém aproximadamente 12% da água doce superficial do mundo, tornando a preservação de seus rios e aquíferos uma questão de importância global."
+      },
+      {
+        q: "O que é o 'efeito estufa' no contexto do desmatamento?",
+        ops: [
+          "Aumento da temperatura em estufas agrícolas",
+          "Redução da umidade nas florestas",
+          "Aquecimento global causado pelo acúmulo de gases na atmosfera",
+          "Fenômeno que ocorre apenas nos polos"
+        ],
+        r: 2,
+        exp: "O desmatamento libera CO₂ estocado na vegetação, intensificando o efeito estufa — o fenômeno pelo qual gases retêm calor na atmosfera e elevam a temperatura global."
+      },
+      {
+        q: "Qual prática doméstica ajuda diretamente a preservar os rios?",
+        ops: [
+          "Lavar calçadas com mangueira",
+          "Descartar medicamentos no vaso sanitário",
+          "Não jogar óleo de cozinha no ralo",
+          "Usar fertilizantes químicos no jardim"
+        ],
+        r: 2,
+        exp: "O óleo de cozinha lançado no ralo contamina rios e impede a oxigenação da água. O descarte correto é em garrafas PET entregues a pontos de coleta."
+      }
+    ];
+
+    let atual = 0;
+    let pontos = 0;
+    let respondeu = false;
+
+    function renderQuestion() {
+      const perg = perguntas[atual];
+      document.getElementById('quizCounter').textContent = `Pergunta ${atual + 1} de ${perguntas.length}`;
+      document.getElementById('progressFill').style.width = `${(atual / perguntas.length) * 100}%`;
+      document.getElementById('quizQuestion').textContent = perg.q;
+
+      const optsEl = document.getElementById('quizOptions');
+      optsEl.innerHTML = '';
+      perg.ops.forEach((op, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = op;
+        btn.onclick = () => responder(i);
+        optsEl.appendChild(btn);
+      });
+
+      document.getElementById('quizFeedback').className = 'quiz-feedback';
+      document.getElementById('quizFeedback').textContent = '';
+      document.getElementById('btnNext').className = 'btn-next';
+      respondeu = false;
+    }
+
+    function responder(idx) {
+      if (respondeu) return;
+      respondeu = true;
+
+      const perg = perguntas[atual];
+      const opts = document.querySelectorAll('.quiz-option');
+
+      opts.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === perg.r) btn.classList.add('correct');
+        else if (i === idx && idx !== perg.r) btn.classList.add('wrong');
+      });
+
+      const fb = document.getElementById('quizFeedback');
+      if (idx === perg.r) {
+        pontos++;
+        fb.className = 'quiz-feedback acerto show';
+        fb.textContent = '✅ Correto! ' + perg.exp;
+      } else {
+        fb.className = 'quiz-feedback erro show';
+        fb.textContent = '❌ Incorreto. ' + perg.exp;
+      }
+
+      document.getElementById('btnNext').className = 'btn-next show';
+    }
+
+    function nextQuestion() {
+      atual++;
+      if (atual < perguntas.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quizArea').style.display = 'none';
+      const res = document.getElementById('quizResult');
+      res.classList.add('show');
+
+      document.getElementById('progressFill').style.width = '100%';
+
+      const pct = pontos / perguntas.length;
+      let emoji, msg;
+
+      if (pct === 1) {
+        emoji = '🏆'; msg = '"Você é um guardião exemplar do meio ambiente! Seu conhecimento é poderoso — use-o para inspirar outros."';
+      } else if (pct >= .71) {
+        emoji = '🌿'; msg = '"Excelente! Você tem um ótimo entendimento ambiental. Cada ação sua faz diferença na preservação do planeta."';
+      } else if (pct >= .43) {
+        emoji = '💧'; msg = '"Bom começo! Continue aprendendo sobre meio ambiente — o conhecimento é a semente da mudança."';
+      } else {
+        emoji = '🌱'; msg = '"Nunca é tarde para aprender. A natureza precisa de defensores — e você pode se tornar um deles!"';
+      }
+
+      document.getElementById('resultEmoji').textContent = emoji;
+      document.getElementById('resultScore').textContent = `${pontos}/${perguntas.length}`;
+      document.getElementById('resultLabel').textContent = `Você acertou ${pontos} de ${perguntas.length} perguntas`;
+      document.getElementById('resultMessage').textContent = msg;
+    }
+
+    function restartQuiz() {
+      atual = 0;
+      pontos = 0;
+      respondeu = false;
+      document.getElementById('quizArea').style.display = 'block';
+      document.getElementById('quizResult').classList.remove('show');
+      renderQuestion();
+    }
+
+    // Iniciar quiz
+    renderQuestion();
+  </script>
+</body>
+</html>
